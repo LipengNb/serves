@@ -9,6 +9,9 @@ class Crud {
       },
       role: {
         populate: 'menus'
+      },
+      account: {
+        populate: 'roles'
       }
     }
     return models[resource]
@@ -25,10 +28,15 @@ class Crud {
           })
         } else {
           const result = await this.model.find({}).sort(configs.sort).populate(configs.populate)
+          console.log(result)
           resolve(result)
         }
       })
     })
+  }
+  // 查找一个
+  async queryOne(parame = {}, configs = {}) {
+    return await this.model.findOne(parame).populate(configs.populate)
   }
   // 创建
   async create(parame = {}) {
@@ -48,17 +56,28 @@ class Crud {
   async send(req, res) {
     const parame = req.method === 'GET' ? req.query : req.body
     // 参数1: 要操作的模型 参数2: 增删改查
-    const { resource, mode } = req.params
+    const { method, resource } = req.params
     const model = require(`../model/${resource}`)
     const crud = new Crud(model)
-    const result = await crud[mode](parame, this.configs(resource))
-    res.send({
-      code: 200,
-      message: 'success',
-      resource: resource,
-      mode: mode,
-      data: result
-    })
+    try{
+      const result = await crud[method](parame, this.configs(resource))
+      console.log(result)
+      res.send({
+        code: 200,
+        message: 'success',
+        resource: resource,
+        mode: method,
+        data: result
+      })
+    }catch(error) {
+      res.send({
+        code: 508,
+        message: 'error',
+        data: error
+      })
+    }
+    
+    
   }
 }
 

@@ -23,10 +23,7 @@ const accountScheme = {
     type: String,
     required: true
   },
-  role: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: 'roles'
-  },
+  roles: { type: mongoose.SchemaTypes.ObjectId, ref: 'roles' },
   status: Boolean
 }
 
